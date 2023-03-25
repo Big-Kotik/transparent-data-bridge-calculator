@@ -12,6 +12,15 @@ class QueueEventHandler<T>(private val events: Array<Event<T>>) {
     }
 
     private fun check() {
-        events.forEach { event -> if (event.check()) event.execute() }
+        var flag = false
+        events.forEach { event ->
+            if (event.check()) {
+                flag = true
+                event.execute()
+            }
+        }
+        if (flag) {
+            events.forEach { event -> event.clear() }
+        }
     }
 }
