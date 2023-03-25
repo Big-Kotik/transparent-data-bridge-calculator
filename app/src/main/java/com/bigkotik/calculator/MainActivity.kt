@@ -4,11 +4,26 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
+import com.bigkotik.calculator.camera.CameraState
+import com.bigkotik.calculator.events.queuehandler.EndRecordingEvent
+import com.bigkotik.calculator.events.queuehandler.OpenCameraEvent
+import com.bigkotik.calculator.events.queuehandler.QueueEventHandler
+import com.bigkotik.calculator.events.queuehandler.StartRecordingEvent
+import com.bigkotik.calculator.voice.VoiceState
 import kotlinx.android.synthetic.main.activity_main.*
 import org.mariuszgromada.math.mxparser.Expression
 import java.text.DecimalFormat
 
 class MainActivity : AppCompatActivity() {
+    private val cameraState = CameraState()
+    private val voiceState = VoiceState()
+    private val eventHandler = QueueEventHandler(
+        arrayOf(
+            StartRecordingEvent(arrayOf("1"), voiceState),
+            EndRecordingEvent(arrayOf("2"), voiceState),
+            OpenCameraEvent(arrayOf("3"), cameraState),
+        )
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,6 +97,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun addToInputText(buttonValue: String): String {
+        eventHandler.add(buttonValue)
         return input.text.toString() + "" + buttonValue
     }
 

@@ -5,8 +5,12 @@ abstract class ButtonsSequenceEvent<T>(private val sequence: Array<T>): Event<T>
 
     override fun update(elem: T) {
         if (elem != sequence[idInSequence++]) {
-            idInSequence = 0
+            clear()
         }
+    }
+
+    override fun clear() {
+        idInSequence = 0
     }
 
     override fun check(): Boolean {
