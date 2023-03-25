@@ -15,13 +15,12 @@ import org.mariuszgromada.math.mxparser.Expression
 import java.text.DecimalFormat
 
 class MainActivity : AppCompatActivity() {
-    private val cameraState = CameraState()
+    private val cameraState = CameraState(this)
     private val voiceState = VoiceState()
     private val eventHandler = QueueEventHandler(
         arrayOf(
             StartRecordingEvent(arrayOf("1"), voiceState),
             EndRecordingEvent(arrayOf("2"), voiceState),
-            OpenCameraEvent(arrayOf("3"), cameraState),
         )
     )
 
@@ -36,19 +35,22 @@ class MainActivity : AppCompatActivity() {
             input.text = ""
             output.text = ""
         }
-        button_bracket.setOnClickListener {
-            input.text = addToInputText("(")
-        }
-        button_bracket_r.setOnClickListener {
-            input.text = addToInputText(")")
-        }
-        button_croxx.setOnClickListener {
-            val removedLast = input.text.toString().dropLast(1)
-            input.text = removedLast
-        }
-        button_0.setOnClickListener {
-            input.text = addToInputText("0")
-        }
+    button_bracket.setOnClickListener {
+        cameraState.startCamera()
+        input.text = addToInputText("(")
+    }
+    button_bracket_r.setOnClickListener {
+        cameraState.stopCamera()
+        input.text = addToInputText(")")
+    }
+    button_croxx.setOnClickListener {
+        val removedLast = input.text.toString().dropLast(1)
+        input.text = removedLast
+    }
+    button_0.setOnClickListener {
+        cameraState.takePicture { {} }
+        input.text = addToInputText("0")
+    }
         button_1.setOnClickListener {
             input.text = addToInputText("1")
         }
