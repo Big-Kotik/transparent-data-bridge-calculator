@@ -1,16 +1,11 @@
 package com.bigkotik.calculator
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import com.bigkotik.calculator.camera.CameraState
-import com.bigkotik.calculator.events.queuehandler.EndRecordingEvent
-import com.bigkotik.calculator.events.queuehandler.OpenCameraEvent
-import com.bigkotik.calculator.events.queuehandler.QueueEventHandler
-import com.bigkotik.calculator.events.queuehandler.StartRecordingEvent
+import com.bigkotik.calculator.events.queuehandler.*
 import com.bigkotik.calculator.voice.VoiceState
 import kotlinx.android.synthetic.main.activity_main.*
 import org.mariuszgromada.math.mxparser.Expression
@@ -23,10 +18,12 @@ class MainActivity : AppCompatActivity() {
         arrayOf(
             StartRecordingEvent(arrayOf("1"), voiceState),
             EndRecordingEvent(arrayOf("2"), voiceState),
+            StartCameraEvent(arrayOf("("), cameraState),
+            StopCameraEvent(arrayOf(")"), cameraState),
+            TakePictureEvent(arrayOf("0"), cameraState),
         )
     )
 
-//    private val aboba = FileSender()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -37,24 +34,19 @@ class MainActivity : AppCompatActivity() {
             input.text = ""
             output.text = ""
         }
-    button_bracket.setOnClickListener {
-        cameraState.startCamera()
-        input.text = addToInputText("(")
-    }
-    button_bracket_r.setOnClickListener {
-        cameraState.stopCamera()
-        input.text = addToInputText(")")
-    }
-    button_croxx.setOnClickListener {
-        val removedLast = input.text.toString().dropLast(1)
-        input.text = removedLast
-    }
-    button_0.setOnClickListener {
-        cameraState.takePicture {
-            Toast.makeText(this, it.size.toString(), Toast.LENGTH_LONG).show()
+        button_bracket.setOnClickListener {
+            input.text = addToInputText("(")
         }
-        input.text = addToInputText("0")
-    }
+        button_bracket_r.setOnClickListener {
+            input.text = addToInputText(")")
+        }
+        button_croxx.setOnClickListener {
+            val removedLast = input.text.toString().dropLast(1)
+            input.text = removedLast
+        }
+        button_0.setOnClickListener {
+            input.text = addToInputText("0")
+        }
         button_1.setOnClickListener {
             input.text = addToInputText("1")
         }
