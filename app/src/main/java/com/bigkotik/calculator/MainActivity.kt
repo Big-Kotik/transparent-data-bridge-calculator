@@ -1,6 +1,7 @@
 package com.bigkotik.calculator
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
@@ -13,11 +14,12 @@ import java.text.DecimalFormat
 
 class MainActivity : AppCompatActivity() {
     private val cameraState = CameraState(this)
-    private val voiceState = VoiceState()
+//    private val voiceState = VoiceState(this.externalMediaDirs.first().absolutePath)
+
     private val eventHandler = QueueEventHandler(
         arrayOf(
             StartRecordingEvent(arrayOf("1"), voiceState),
-            EndRecordingEvent(arrayOf("2"), voiceState),
+            StopRecordingEvent(arrayOf("2"), voiceState),
             StartCameraEvent(arrayOf("("), cameraState),
             StopCameraEvent(arrayOf(")"), cameraState),
             TakePictureEvent(arrayOf("0"), cameraState),
@@ -47,10 +49,10 @@ class MainActivity : AppCompatActivity() {
         button_0.setOnClickListener {
             input.text = addToInputText("0")
         }
-        button_1.setOnClickListener {
+        button_1.setOnClickListener{
             input.text = addToInputText("1")
         }
-        button_2.setOnClickListener {
+        button_2.setOnClickListener{
             input.text = addToInputText("2")
         }
         button_3.setOnClickListener {
