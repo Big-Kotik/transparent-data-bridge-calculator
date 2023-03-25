@@ -1,6 +1,7 @@
 package com.bigkotik.calculator.transport
 
 import android.net.Uri
+import android.util.Log
 import com.bigkotik.transparentdatabridge.*
 import com.google.protobuf.ByteString
 import io.grpc.ManagedChannelBuilder
@@ -33,9 +34,9 @@ class FileSender(serverUri: Uri, private val bufSize: Int) {
                 try {
                     stub.sendChunks(fileToFlow(filename, stream))
                 } catch (e: StatusException) {
-                    System.err.printf("Status exception: %s", e)
+                    Log.e(TAG, "Status exception: ${e}")
                 } catch (e: IOException) {
-                    System.err.printf("IO exception: %s", e)
+                    Log.e(TAG, "IO exception: ${e}")
                 }
             }
         }
@@ -71,5 +72,8 @@ class FileSender(serverUri: Uri, private val bufSize: Int) {
                 .build()
             emit(file)
         }
+    }
+    companion object {
+        const val TAG = "fucking transport"
     }
 }
