@@ -1,11 +1,15 @@
 package com.bigkotik.calculator.camera
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.media.Image
 import android.util.Log
 import android.widget.Toast
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import com.bigkotik.calculator.MainActivity
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -24,23 +28,29 @@ class CameraState(private val mainActivity: MainActivity) {
         }, ContextCompat.getMainExecutor(mainActivity))
     }
 
-    fun takePicture(onPictureTaken: (File) -> Unit) {
-        val file = File(mainActivity.externalMediaDirs.first(), "${System.currentTimeMillis()}.jpg")
-        val outputOptions = ImageCapture.OutputFileOptions.Builder(file).build()
-
+    fun takePicture(onPictureTaken: (ByteArray) -> Unit) {
         imageCapture?.takePicture(
-            outputOptions,
             ContextCompat.getMainExecutor(mainActivity),
-            object : ImageCapture.OnImageSavedCallback {
+            object : ImageCapture.OnImageCapturedCallback() {
                 override fun onError(exc: ImageCaptureException) {
                     Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
                 }
 
-                override fun
-                        onImageSaved(output: ImageCapture.OutputFileResults) {
-                    val msg = "Photo capture succeeded: ${output.savedUri}"
-                    Toast.makeText(mainActivity, msg, Toast.LENGTH_SHORT).show()
-                    Log.d(TAG, msg)
+                override fun onCaptureSuccess(image: ImageProxy) {
+                    Log.e(TAG, "Photo capture suck ass")
+                    val buffer = image.planes[0]
+                    val bytes = ByteArray(buffer.buffer.remaining())
+                    buffer.buffer.get(bytes)
+
+                    val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+
+                    val stream = ByteArrayOutputStream()
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+
+                    Log.e(TAG, "Executed, byte array size: ${stream.toByteArray().size}")
+                    onPictureTaken(stream.toByteArray())
+
+                    image.close()
                 }
             }
         )
@@ -64,6 +74,6 @@ class CameraState(private val mainActivity: MainActivity) {
     }
 
     companion object {
-        private const val TAG = "CameraXPictureTaker"
+        private const val TAG = "CameraState"
     }
 }

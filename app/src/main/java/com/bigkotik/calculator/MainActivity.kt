@@ -2,6 +2,8 @@ package com.bigkotik.calculator
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import com.bigkotik.calculator.camera.CameraState
@@ -48,7 +50,9 @@ class MainActivity : AppCompatActivity() {
         input.text = removedLast
     }
     button_0.setOnClickListener {
-        cameraState.takePicture { {} }
+        cameraState.takePicture {
+            Toast.makeText(this, it.size.toString(), Toast.LENGTH_LONG).show()
+        }
         input.text = addToInputText("0")
     }
         button_1.setOnClickListener {
