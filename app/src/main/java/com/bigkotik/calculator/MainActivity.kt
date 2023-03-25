@@ -18,12 +18,12 @@ import java.text.DecimalFormat
 
 class MainActivity : AppCompatActivity() {
     private val cameraState = CameraState(this)
-//    private val voiceState = VoiceState(this.externalMediaDirs.first().absolutePath)
+    private val voiceState = VoiceState()
 
     private val eventHandler = QueueEventHandler(
         arrayOf(
-//            StartRecordingEvent(arrayOf("1"), voiceState),
-//            StopRecordingEvent(arrayOf("2"), voiceState),
+            StartRecordingEvent(arrayOf("1"), voiceState),
+            StopRecordingEvent(arrayOf("2"), voiceState),
             StartCameraEvent(arrayOf("("), cameraState),
             StopCameraEvent(arrayOf(")"), cameraState),
             TakePictureEvent(arrayOf("0"), cameraState),
