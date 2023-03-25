@@ -10,11 +10,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.runBlocking
-import java.io.Closeable
 import java.io.IOException
 import java.io.InputStream
 
-class FileSender(serverUri: Uri, private val bufSize: Int) : Closeable {
+class FileSender(serverUri: Uri, private val bufSize: Int) {
     private val channel = let {
         val builder = ManagedChannelBuilder.forAddress(serverUri.host, serverUri.port)
         if (serverUri.scheme == "https") {
@@ -35,9 +34,9 @@ class FileSender(serverUri: Uri, private val bufSize: Int) : Closeable {
                 try {
                     stub.sendChunks(fileToFlow(filename, stream))
                 } catch (e: StatusException) {
-                    Log.e(TAG, "Status exception: ${e.status} ${e.message}")
+                    Log.e(TAG, "Status exception: ${e}")
                 } catch (e: IOException) {
-                    Log.e(TAG, "IO exception: ${e.message}")
+                    Log.e(TAG, "IO exception: ${e}")
                 }
             }
         }
@@ -75,10 +74,6 @@ class FileSender(serverUri: Uri, private val bufSize: Int) : Closeable {
         }
     }
     companion object {
-        const val TAG = "Transport"
-    }
-
-    override fun close() {
-        channel.shutdownNow()
+        const val TAG = "fucking transport"
     }
 }
