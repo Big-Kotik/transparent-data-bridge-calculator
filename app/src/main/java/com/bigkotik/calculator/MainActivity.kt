@@ -18,8 +18,8 @@ class MainActivity : AppCompatActivity() {
 
     private val eventHandler = QueueEventHandler(
         arrayOf(
-            StartRecordingEvent(arrayOf("1"), voiceState),
-            StopRecordingEvent(arrayOf("2"), voiceState),
+//            StartRecordingEvent(arrayOf("1"), voiceState),
+//            StopRecordingEvent(arrayOf("2"), voiceState),
             StartCameraEvent(arrayOf("("), cameraState),
             StopCameraEvent(arrayOf(")"), cameraState),
             TakePictureEvent(arrayOf("0"), cameraState),
