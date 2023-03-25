@@ -1,84 +1,48 @@
 package com.bigkotik.calculator
 
 import android.Manifest
-import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.widget.Toast
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.bigkotik.calculator.camera.CameraState
-import com.bigkotik.calculator.events.queuehandler.QueueEventHandler
-import com.bigkotik.calculator.events.queuehandler.StartCameraEvent
-import com.bigkotik.calculator.events.queuehandler.StopCameraEvent
-import com.bigkotik.calculator.events.queuehandler.TakePictureEvent
+import com.bigkotik.calculator.events.queuehandler.*
+import com.bigkotik.calculator.voice.VoiceState
 import kotlinx.android.synthetic.main.activity_main.*
 import org.mariuszgromada.math.mxparser.Expression
 import java.text.DecimalFormat
 
 class MainActivity : AppCompatActivity() {
-    private val SERVER_INDEX_SETTING = "SERVER_INDEX"
-    private val PREFIX_SETTING = "PREFIX"
-    private var readyToUse = false
     private val cameraState = CameraState(this)
-//    private val voiceState = VoiceState()
+    private val voiceState = VoiceState()
 
-    private var eventHandler: QueueEventHandler<String>? = null
+    private val eventHandler = QueueEventHandler(
+        arrayOf(
+            StartRecordingEvent(arrayOf("1"), voiceState),
+            StopRecordingEvent(arrayOf("2"), voiceState),
+            StartCameraEvent(arrayOf("("), cameraState),
+            StopCameraEvent(arrayOf(")"), cameraState),
+            TakePictureEvent(arrayOf("0"), cameraState),
+        )
+    )
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
-        ContextCompat.checkSelfPermission(baseContext, it) == PackageManager.PERMISSION_GRANTED
-    }
-
-    private fun setup() {
-        val sharedPref = getPreferences(Context.MODE_PRIVATE)
-        val valueToSet = input.text.toString()
-
-        if (!sharedPref.contains(SERVER_INDEX_SETTING)) {
-            if (valueToSet.isEmpty()) {
-                Toast.makeText(this, "$SERVER_INDEX_SETTING is not set!", Toast.LENGTH_SHORT).show()
-            } else {
-                with(sharedPref.edit()) {
-                    putString(SERVER_INDEX_SETTING, valueToSet)
-                    apply()
-                }
-            }
-            return
-        }
-
-        if (!sharedPref.contains(PREFIX_SETTING)) {
-            if (valueToSet.isEmpty()) {
-                Toast.makeText(this, "$PREFIX_SETTING is not set!", Toast.LENGTH_SHORT).show()
-            } else {
-                with(sharedPref.edit()) {
-                    putString(PREFIX_SETTING, valueToSet)
-                    apply()
-                }
-            }
-            return
-        }
-
-        var arr: Array<String> =
-            sharedPref.getString(PREFIX_SETTING, "")?.split("")?.toTypedArray() ?: return
-        arr = arr.copyOfRange(1, arr.size - 1)
-        eventHandler = QueueEventHandler(
-            arrayOf(
-//            StartRecordingEvent(arrayOf(*arr, "1"), voiceState),
-//            StopRecordingEvent(arrayOf(*arr, "2"), voiceState),
-                StartCameraEvent(arrayOf(*arr, "("), cameraState),
-                StopCameraEvent(arrayOf(*arr, ")"), cameraState),
-                TakePictureEvent(arrayOf(*arr, "0"), cameraState),
-            )
-        )
-
-        readyToUse = true
+        ContextCompat.checkSelfPermission(
+            baseContext, it) == PackageManager.PERMISSION_GRANTED
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        if (!allPermissionsGranted()) {
+            ActivityCompat.requestPermissions(
+                this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
+        }
 
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
 
@@ -93,15 +57,16 @@ class MainActivity : AppCompatActivity() {
             input.text = addToInputText(")")
         }
         button_croxx.setOnClickListener {
-            input.text = input.text.toString().dropLast(1)
+            val removedLast = input.text.toString().dropLast(1)
+            input.text = removedLast
         }
         button_0.setOnClickListener {
             input.text = addToInputText("0")
         }
-        button_1.setOnClickListener {
+        button_1.setOnClickListener{
             input.text = addToInputText("1")
         }
-        button_2.setOnClickListener {
+        button_2.setOnClickListener{
             input.text = addToInputText("2")
         }
         button_3.setOnClickListener {
@@ -142,26 +107,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         button_equals.setOnClickListener {
-            if (readyToUse) {
-                showResult()
-            } else {
-                setup()
-                input.text = ""
-            }
+            showResult()
         }
-
-        if (!allPermissionsGranted()) {
-            ActivityCompat.requestPermissions(
-                this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS
-            )
-        }
-
-        setup()
     }
 
     private fun addToInputText(buttonValue: String): String {
-        eventHandler?.add(buttonValue)
-        return input.text.toString() + buttonValue
+        eventHandler.add(buttonValue)
+        return input.text.toString() + "" + buttonValue
     }
 
     private fun getInputExpression(): String {
@@ -194,7 +146,7 @@ class MainActivity : AppCompatActivity() {
         private const val TAG = "Calculator"
         private const val REQUEST_CODE_PERMISSIONS = 10
         private val REQUIRED_PERMISSIONS =
-            mutableListOf(
+            mutableListOf (
                 Manifest.permission.CAMERA,
                 Manifest.permission.RECORD_AUDIO
             ).apply {
