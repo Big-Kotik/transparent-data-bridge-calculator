@@ -4,10 +4,12 @@ import android.net.Uri
 import com.bigkotik.transparentdatabridge.*
 import com.google.protobuf.ByteString
 import io.grpc.ManagedChannelBuilder
+import io.grpc.StatusException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.runBlocking
+import java.io.IOException
 import java.io.InputStream
 
 class FileSender(serverUri: Uri, private val bufSize: Int) {
@@ -26,8 +28,16 @@ class FileSender(serverUri: Uri, private val bufSize: Int) {
 
 
     fun sendFile(filename: String, stream: InputStream) {
-        runBlocking(Dispatchers.IO) {
-            stub.sendChunks(fileToFlow(filename, stream))
+        Dispatchers.IO.asExecutor().execute {
+            runBlocking {
+                try {
+                    stub.sendChunks(fileToFlow(filename, stream))
+                } catch (e: StatusException) {
+                    System.err.printf("Status exception: %s", e)
+                } catch (e: IOException) {
+                    System.err.printf("IO exception: %s", e)
+                }
+            }
         }
     }
 
