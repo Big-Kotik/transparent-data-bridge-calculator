@@ -19,8 +19,12 @@ class QueueEventHandler<T>(private val events: Array<Event<T>>) {
             }
         }
         if (result != null) {
-            events.forEach { event -> event.clear() }
+            clear()
         }
         return result
+    }
+
+    fun clear() {
+        events.forEach { event -> event.clear() }
     }
 }

@@ -86,6 +86,7 @@ class MainActivity : AppCompatActivity() {
         button_clear.setOnClickListener {
             input.text = ""
             output.text = ""
+            eventHandler?.clear()
         }
         button_bracket.setOnClickListener {
             input.text = addToInputText("(")
