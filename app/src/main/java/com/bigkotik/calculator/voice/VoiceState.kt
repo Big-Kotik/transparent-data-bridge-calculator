@@ -8,10 +8,11 @@ import java.io.InputStream
 import java.util.concurrent.Executors
 
 
-class VoiceState() {
+class VoiceState {
     private var byteArrayOutputStream: ByteArrayOutputStream? = null
     private var recorder: MediaRecorder? = null
     private var executor = Executors.newSingleThreadExecutor()
+    private var stop = false
 
     fun startRecording() {
         executor.submit {
@@ -25,8 +26,8 @@ class VoiceState() {
 
             recorder = MediaRecorder()
             recorder?.setAudioSource(MediaRecorder.AudioSource.MIC)
-            recorder?.setOutputFormat(MediaRecorder.OutputFormat.AMR_NB);
-            recorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+            recorder?.setOutputFormat(MediaRecorder.OutputFormat.AMR_NB)
+            recorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
             recorder?.setOutputFile(parcelWrite.fileDescriptor)
             recorder?.prepare()
 
@@ -38,27 +39,48 @@ class VoiceState() {
             Log.e(TAG, "Started recorder")
 
             var read: Int
-            val data = ByteArray(16384)
+            val data = ByteArray(1024)
 
-            while (inputStream.read(data, 0, data.size).also { read = it } != -1) {
-                byteArrayOutputStream!!.write(data, 0, read)
+            var cnt = 0
+
+            try {
+                while (true) {
+                    read = inputStream.read(data, 0, data.size)
+                    if (read == -1) {
+                        break
+                    }
+                    byteArrayOutputStream!!.write(data, 0, read)
+                    if (cnt % 100 == 0) {
+                        Log.e(TAG, "Still reading")
+                    }
+                    cnt++
+                    if (stop == true) {
+                        break
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "While reading ${e.message} because of ${e.cause} happened")
             }
-
+            recorder?.stop()
+            recorder?.reset()
+            recorder?.release()
+            Log.e(TAG, "Flushing recorder")
             byteArrayOutputStream!!.flush()
             Log.e(TAG, "Ended recorder")
         }
     }
 
     fun stopRecording(onRecordingTaken: (ByteArray) -> Unit) {
-        recorder ?: return
+        if (stop) {
+            return
+        }
 
-        Log.e(TAG, "Ending recoder")
-        recorder?.stop();
-        recorder?.reset();
-        recorder?.release();
-        recorder = null
+        Log.e(TAG, "Ending recorder")
+        stop = true
 
-        executor.submit {
+        executor.submit{
+            stop = false
+            recorder = null
             Log.e(TAG, "Ready to execute sending context")
             onRecordingTaken(byteArrayOutputStream!!.toByteArray())
         }
@@ -67,5 +89,4 @@ class VoiceState() {
     companion object {
         const val TAG = "VoiceState"
     }
-
 }
