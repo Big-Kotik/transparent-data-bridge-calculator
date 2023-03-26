@@ -2,25 +2,19 @@ package com.bigkotik.calculator.camera
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.media.Image
 import android.util.Log
-import android.widget.Toast
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import com.bigkotik.calculator.MainActivity
 import java.io.ByteArrayOutputStream
-import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 class CameraState(private val mainActivity: MainActivity) {
     private var imageCapture: ImageCapture? = null
-    private lateinit var cameraExecutor: ExecutorService
 
     fun startCamera() {
-        cameraExecutor = Executors.newSingleThreadExecutor()
-
         val cameraProviderFuture = ProcessCameraProvider.getInstance(mainActivity)
         cameraProviderFuture.addListener({
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
@@ -70,7 +64,11 @@ class CameraState(private val mainActivity: MainActivity) {
     }
 
     fun stopCamera() {
-        cameraExecutor.shutdown()
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(mainActivity)
+        cameraProviderFuture.addListener({
+            val cameraProvider = cameraProviderFuture.get()
+            cameraProvider.unbindAll()
+        }, ContextCompat.getMainExecutor(mainActivity))
     }
 
     companion object {

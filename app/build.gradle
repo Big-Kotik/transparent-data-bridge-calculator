@@ -10,7 +10,7 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "Dev.JahidHasanCo.calculator"
+        applicationId "com.bigkotik.calculator"
         minSdkVersion 21
         targetSdkVersion 31
         versionCode 1

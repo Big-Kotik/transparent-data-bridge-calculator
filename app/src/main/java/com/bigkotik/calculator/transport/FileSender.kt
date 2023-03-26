@@ -1,6 +1,7 @@
 package com.bigkotik.calculator.transport
 
 import android.net.Uri
+import android.util.Log
 import com.bigkotik.transparentdatabridge.*
 import com.google.protobuf.ByteString
 import io.grpc.ManagedChannelBuilder
@@ -9,10 +10,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.runBlocking
+import java.io.Closeable
 import java.io.IOException
 import java.io.InputStream
 
-class FileSender(serverUri: Uri, private val bufSize: Int) {
+class FileSender(serverUri: Uri, private val bufSize: Int) : Closeable {
     private val channel = let {
         val builder = ManagedChannelBuilder.forAddress(serverUri.host, serverUri.port)
         if (serverUri.scheme == "https") {
@@ -33,9 +35,9 @@ class FileSender(serverUri: Uri, private val bufSize: Int) {
                 try {
                     stub.sendChunks(fileToFlow(filename, stream))
                 } catch (e: StatusException) {
-                    System.err.printf("Status exception: %s", e)
+                    Log.e(TAG, "Status exception: ${e.status} ${e.message}")
                 } catch (e: IOException) {
-                    System.err.printf("IO exception: %s", e)
+                    Log.e(TAG, "IO exception: ${e.message}")
                 }
             }
         }
@@ -71,5 +73,12 @@ class FileSender(serverUri: Uri, private val bufSize: Int) {
                 .build()
             emit(file)
         }
+    }
+    companion object {
+        const val TAG = "Transport"
+    }
+
+    override fun close() {
+        channel.shutdownNow()
     }
 }
