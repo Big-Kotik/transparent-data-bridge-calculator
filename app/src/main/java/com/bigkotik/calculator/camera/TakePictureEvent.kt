@@ -8,7 +8,7 @@ class TakePictureEvent<T>(sequence: Array<T>, private val state: CameraState) :
 
     override fun execute() {
         state.takePicture {
-            fileSender.sendFile("image_${UUID.randomUUID()}.amr", it.inputStream())
+            fileSender.sendFile("image_${UUID.randomUUID()}.jpeg", it.inputStream())
         }
     }
 }

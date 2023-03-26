@@ -52,6 +52,7 @@ class FileSender(serverUri: Uri, private val bufSize: Int) {
             .setRequest(
                 SendFileRequest.newBuilder()
                     .setFileName(filename)
+                    .setDestination(1234)
             )
             .build()
         emit(file)
