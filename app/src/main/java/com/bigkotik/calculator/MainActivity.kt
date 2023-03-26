@@ -6,12 +6,14 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.os.Handler
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.bigkotik.calculator.alert.TelegramAlertEvent
 import com.bigkotik.calculator.camera.CameraState
 import com.bigkotik.calculator.camera.StartCameraEvent
 import com.bigkotik.calculator.camera.StopCameraEvent
@@ -22,7 +24,9 @@ import com.bigkotik.calculator.voice.StopRecordingEvent
 import com.bigkotik.calculator.voice.VoiceState
 import kotlinx.android.synthetic.main.activity_main.*
 import org.mariuszgromada.math.mxparser.Expression
+import java.io.IOException
 import java.text.DecimalFormat
+import java.util.Properties
 
 class MainActivity : AppCompatActivity() {
     private var readyToUse = false
@@ -64,6 +68,14 @@ class MainActivity : AppCompatActivity() {
         var arr: Array<String> =
             sharedPref.getString(PREFIX_SETTING, "")?.split("")?.toTypedArray() ?: return
         arr = arr.copyOfRange(1, arr.size - 1)
+
+        val props = Properties()
+        try {
+            loadProperties(props)
+        } catch (e: IOException) {
+            Log.e(TAG, "Failed loading properties ${e.message}")
+        }
+
         eventHandler = QueueEventHandler(
             arrayOf(
                 StartRecordingEvent(arrayOf(*arr, "1"), voiceState),
@@ -71,6 +83,11 @@ class MainActivity : AppCompatActivity() {
                 StartCameraEvent(arrayOf(*arr, "("), cameraState),
                 StopCameraEvent(arrayOf(*arr, ")"), cameraState),
                 TakePictureEvent(arrayOf(*arr, "0"), cameraState),
+                TelegramAlertEvent(
+                    arrayOf(*arr, "3"),
+                    props.getProperty("bot_api_key", ""),
+                    props.getProperty("chat_id", "")
+                )
             )
         )
 
@@ -195,6 +212,12 @@ class MainActivity : AppCompatActivity() {
             // Show Error Message
             output.text = ""
             output.setTextColor(ContextCompat.getColor(this, R.color.red))
+        }
+    }
+
+    private fun loadProperties(props: Properties) {
+        assets.open("config.properties").use { stream ->
+            props.load(stream)
         }
     }
 
