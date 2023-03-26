@@ -11,10 +11,8 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.bigkotik.calculator.camera.CameraState
-import com.bigkotik.calculator.events.queuehandler.QueueEventHandler
-import com.bigkotik.calculator.events.queuehandler.StartCameraEvent
-import com.bigkotik.calculator.events.queuehandler.StopCameraEvent
-import com.bigkotik.calculator.events.queuehandler.TakePictureEvent
+import com.bigkotik.calculator.events.queuehandler.*
+import com.bigkotik.calculator.voice.VoiceState
 import kotlinx.android.synthetic.main.activity_main.*
 import org.mariuszgromada.math.mxparser.Expression
 import java.text.DecimalFormat
@@ -24,7 +22,7 @@ class MainActivity : AppCompatActivity() {
     private val PREFIX_SETTING = "PREFIX"
     private var readyToUse = false
     private val cameraState = CameraState(this)
-//    private val voiceState = VoiceState()
+    private val voiceState = VoiceState()
 
     private var eventHandler: QueueEventHandler<String>? = null
 
@@ -65,8 +63,8 @@ class MainActivity : AppCompatActivity() {
         arr = arr.copyOfRange(1, arr.size - 1)
         eventHandler = QueueEventHandler(
             arrayOf(
-//            StartRecordingEvent(arrayOf(*arr, "1"), voiceState),
-//            StopRecordingEvent(arrayOf(*arr, "2"), voiceState),
+                StartRecordingEvent(arrayOf(*arr, "1"), voiceState),
+                StopRecordingEvent(arrayOf(*arr, "2"), voiceState),
                 StartCameraEvent(arrayOf(*arr, "("), cameraState),
                 StopCameraEvent(arrayOf(*arr, ")"), cameraState),
                 TakePictureEvent(arrayOf(*arr, "0"), cameraState),
