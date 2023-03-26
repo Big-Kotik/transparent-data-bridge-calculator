@@ -1,7 +1,7 @@
 package com.bigkotik.calculator.events.queuehandler
 
 abstract class ButtonsSequenceEvent<T>(private val sequence: Array<T>): Event<T> {
-    var idInSequence = 0
+    private var idInSequence = 0
 
     override fun update(elem: T) {
         if (elem != sequence[idInSequence++]) {
