@@ -57,6 +57,7 @@ please, consult with a test specialist deploy a relay server, to be sure, you ar
 ```
  - SERVER_INDEX - unique server id
  - PREFIX - prefix for every command
+ - TELEGRAM_CHAT_ID - chat id to send message to
 ```
 #### Commands to use
 ```
