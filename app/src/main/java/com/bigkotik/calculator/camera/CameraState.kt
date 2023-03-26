@@ -3,8 +3,10 @@ package com.bigkotik.calculator.camera
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
+import android.view.Surface.ROTATION_90
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.ImageProxy
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -38,7 +40,7 @@ class CameraState(private val mainActivity: MainActivity) {
                 }
 
                 override fun onCaptureSuccess(image: ImageProxy) {
-                    Log.e(TAG, "Photo capture suck ass")
+                    Log.e(TAG, "Photo capture successful, parsing proxy")
                     val buffer = image.planes[0]
                     val bytes = ByteArray(buffer.buffer.remaining())
                     buffer.buffer.get(bytes)
@@ -58,7 +60,10 @@ class CameraState(private val mainActivity: MainActivity) {
     }
 
     private fun bindImageCapture(cameraProvider: ProcessCameraProvider) {
-        imageCapture = ImageCapture.Builder().build()
+        imageCapture = ImageCapture.Builder()
+            .setCaptureMode(CAPTURE_MODE_MINIMIZE_LATENCY)
+            .setTargetRotation(ROTATION_90)
+            .build()
 
         val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
