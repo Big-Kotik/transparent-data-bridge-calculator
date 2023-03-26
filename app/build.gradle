@@ -99,4 +99,5 @@ dependencies {
     implementation "androidx.camera:camera-extensions:${camerax_version}"
 
     implementation 'org.mariuszgromada.math:MathParser.org-mXparser:4.4.2'
+    implementation 'com.squareup.okhttp3:okhttp:4.10.0'
 }

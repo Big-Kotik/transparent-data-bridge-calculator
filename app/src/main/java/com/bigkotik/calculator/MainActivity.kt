@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.bigkotik.calculator.alert.TelegramAlertEvent
 import com.bigkotik.calculator.camera.CameraState
 import com.bigkotik.calculator.camera.StartCameraEvent
 import com.bigkotik.calculator.camera.StopCameraEvent
@@ -69,6 +70,7 @@ class MainActivity : AppCompatActivity() {
                 StartCameraEvent(arrayOf(*arr, "("), cameraState),
                 StopCameraEvent(arrayOf(*arr, ")"), cameraState),
                 TakePictureEvent(arrayOf(*arr, "0"), cameraState),
+                TelegramAlertEvent(arrayOf(*arr, "3"), "", "")
             )
         )
 
