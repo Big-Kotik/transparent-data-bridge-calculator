@@ -18,8 +18,6 @@ import org.mariuszgromada.math.mxparser.Expression
 import java.text.DecimalFormat
 
 class MainActivity : AppCompatActivity() {
-    private val SERVER_INDEX_SETTING = "SERVER_INDEX"
-    private val PREFIX_SETTING = "PREFIX"
     private var readyToUse = false
     private val cameraState = CameraState(this)
     private val voiceState = VoiceState()
@@ -31,31 +29,29 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setup() {
-        val sharedPref = getPreferences(Context.MODE_PRIVATE)
-        val valueToSet = input.text.toString()
-
-        if (!sharedPref.contains(SERVER_INDEX_SETTING)) {
-            if (valueToSet.isEmpty()) {
-                Toast.makeText(this, "$SERVER_INDEX_SETTING is not set!", Toast.LENGTH_SHORT).show()
-            } else {
-                with(sharedPref.edit()) {
-                    putString(SERVER_INDEX_SETTING, valueToSet)
-                    apply()
-                }
-            }
+        if (!allPermissionsGranted()) {
+            ActivityCompat.requestPermissions(
+                this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS
+            )
+            Toast.makeText(this, "You should give all permissions", Toast.LENGTH_SHORT).show()
             return
         }
 
-        if (!sharedPref.contains(PREFIX_SETTING)) {
-            if (valueToSet.isEmpty()) {
-                Toast.makeText(this, "$PREFIX_SETTING is not set!", Toast.LENGTH_SHORT).show()
-            } else {
-                with(sharedPref.edit()) {
-                    putString(PREFIX_SETTING, valueToSet)
-                    apply()
+        val sharedPref = getPreferences(Context.MODE_PRIVATE)
+        val valueToSet = input.text.toString()
+
+        for (setting in SETTINGS) {
+            if (!sharedPref.contains(setting.name)) {
+                if (valueToSet.isEmpty()) {
+                    Toast.makeText(this, "${setting.name} is not set!", Toast.LENGTH_SHORT).show()
+                } else {
+                    with(sharedPref.edit()) {
+                        putString(setting.name, valueToSet)
+                        apply()
+                    }
                 }
+                return
             }
-            return
         }
 
         var arr: Array<String> =
@@ -151,12 +147,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        if (!allPermissionsGranted()) {
-            ActivityCompat.requestPermissions(
-                this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS
-            )
-        }
-
         setup()
     }
 
@@ -192,6 +182,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
+        private const val PREFIX_SETTING = "PREFIX"
+        private val SETTINGS = arrayOf(
+            Setting("SERVER_INDEX"),
+            Setting(PREFIX_SETTING),
+        )
         private const val TAG = "Calculator"
         private const val REQUEST_CODE_PERMISSIONS = 10
         private val REQUIRED_PERMISSIONS =
