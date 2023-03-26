@@ -3,6 +3,7 @@ package com.bigkotik.calculator.voice
 import android.media.MediaRecorder
 import android.os.ParcelFileDescriptor
 import android.util.Log
+import com.bigkotik.calculator.events.queuehandler.EventException
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.util.concurrent.Executors
@@ -72,7 +73,7 @@ class VoiceState {
 
     fun stopRecording(onRecordingTaken: (ByteArray) -> Unit) {
         if (stop) {
-            return
+            throw EventException("Voice is not recording")
         }
 
         Log.e(TAG, "Ending recorder")
