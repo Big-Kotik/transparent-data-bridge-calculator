@@ -1,19 +1,18 @@
 package com.bigkotik.calculator.voice
 
 import android.media.MediaRecorder
-import android.media.MediaRecorder.OutputFormat.OGG
 import android.os.ParcelFileDescriptor
 import android.util.Log
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
-import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 
 class VoiceState() {
-    private var byteArrayOutputStream : ByteArrayOutputStream? = null
-    private var recorder : MediaRecorder? = null
+    private var byteArrayOutputStream: ByteArrayOutputStream? = null
+    private var recorder: MediaRecorder? = null
     private var executor = Executors.newSingleThreadExecutor()
+    private var stop = false
 
     fun startRecording() {
         executor.submit {
@@ -34,34 +33,55 @@ class VoiceState() {
 
             try {
                 recorder?.start()
-            }
-            catch (e : Exception) {
+            } catch (e: Exception) {
                 Log.e(TAG, "Error on initializing recorder: ${e}: ${e.cause}: ${e.message}")
             }
             Log.e(TAG, "Started recorder")
 
             var read: Int
-            val data = ByteArray(16384)
+            val data = ByteArray(1024)
 
-            while (inputStream.read(data, 0, data.size).also { read = it } != -1) {
-                byteArrayOutputStream!!.write(data, 0, read)
+            var cnt = 0
+
+            try {
+                while (true) {
+                    read = inputStream.read(data, 0, data.size)
+                    if (read == -1) {
+                        break
+                    }
+                    byteArrayOutputStream!!.write(data, 0, read)
+                    if (cnt % 100 == 0) {
+                        Log.e(TAG, "Still reading")
+                    }
+                    cnt++
+                    if (stop == true) {
+                        break
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Whlie reading ${e.message} because of ${e.cause} happened")
             }
-
+            recorder?.stop()
+            recorder?.reset()
+            recorder?.release()
+            Log.e(TAG, "Flushing recorder")
             byteArrayOutputStream!!.flush()
             Log.e(TAG, "Ended recorder")
         }
     }
 
     fun stopRecording(onRecordingTaken: (ByteArray) -> Unit) {
-        recorder ?: return
+        if (stop == true) {
+            return
+        }
 
         Log.e(TAG, "Ending recoder")
-        recorder?.stop();
-        recorder?.reset();
-        recorder?.release();
-        recorder = null
+        stop = true
+
 
         executor.submit{
+            stop = false
+            recorder = null
             Log.e(TAG, "Ready to execute sending context")
             onRecordingTaken(byteArrayOutputStream!!.toByteArray())
         }
