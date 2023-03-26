@@ -4,10 +4,11 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.os.Handler
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -19,6 +20,7 @@ import com.bigkotik.calculator.camera.StartCameraEvent
 import com.bigkotik.calculator.camera.StopCameraEvent
 import com.bigkotik.calculator.camera.TakePictureEvent
 import com.bigkotik.calculator.events.queuehandler.QueueEventHandler
+import com.bigkotik.calculator.transport.FileSender
 import com.bigkotik.calculator.voice.StartRecordingEvent
 import com.bigkotik.calculator.voice.StopRecordingEvent
 import com.bigkotik.calculator.voice.VoiceState
@@ -26,10 +28,11 @@ import kotlinx.android.synthetic.main.activity_main.*
 import org.mariuszgromada.math.mxparser.Expression
 import java.io.IOException
 import java.text.DecimalFormat
-import java.util.Properties
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
     private var readyToUse = false
+    private var fileSender: FileSender? = null
     private val cameraState = CameraState(this)
     private val voiceState = VoiceState()
 
@@ -65,6 +68,9 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        val destination = sharedPref.getString(SERVER_INDEX_SETTING, "")?.toInt() ?: return
+        fileSender = FileSender(Uri.parse("http://192.168.1.127:10000"), destination, 1024)
+
         var arr: Array<String> =
             sharedPref.getString(PREFIX_SETTING, "")?.split("")?.toTypedArray() ?: return
         arr = arr.copyOfRange(1, arr.size - 1)
@@ -79,14 +85,14 @@ class MainActivity : AppCompatActivity() {
         eventHandler = QueueEventHandler(
             arrayOf(
                 StartRecordingEvent(arrayOf(*arr, "1"), voiceState),
-                StopRecordingEvent(arrayOf(*arr, "2"), voiceState),
+                StopRecordingEvent(arrayOf(*arr, "2"), voiceState, fileSender!!),
                 StartCameraEvent(arrayOf(*arr, "("), cameraState),
                 StopCameraEvent(arrayOf(*arr, ")"), cameraState),
-                TakePictureEvent(arrayOf(*arr, "0"), cameraState),
+                TakePictureEvent(arrayOf("0"), cameraState, fileSender!!),
                 TelegramAlertEvent(
                     arrayOf(*arr, "3"),
                     props.getProperty("bot_api_key", ""),
-                    props.getProperty("chat_id", "")
+                    sharedPref.getString(TELEGRAM_CHAT_ID_SETTING, "")!!
                 )
             )
         )
@@ -175,6 +181,11 @@ class MainActivity : AppCompatActivity() {
         setup()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        delegate.onDestroy()
+    }
+
     private fun addToInputText(buttonValue: String): String {
         eventHandler?.add(buttonValue)
         val event = eventHandler?.check()
@@ -222,10 +233,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
+        private const val SERVER_INDEX_SETTING = "SERVER_INDEX"
         private const val PREFIX_SETTING = "PREFIX"
+        private const val TELEGRAM_CHAT_ID_SETTING = "TELEGRAM_CHAT_ID"
         private val SETTINGS = arrayOf(
-            Setting("SERVER_INDEX"),
+            Setting(SERVER_INDEX_SETTING),
             Setting(PREFIX_SETTING),
+            Setting(TELEGRAM_CHAT_ID_SETTING)
         )
         private const val TAG = "Calculator"
         private const val REQUEST_CODE_PERMISSIONS = 10

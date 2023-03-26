@@ -1,10 +1,14 @@
 package com.bigkotik.calculator.camera
 
 import com.bigkotik.calculator.events.queuehandler.TransportButtonSequenceEvent
+import com.bigkotik.calculator.transport.FileSender
 import java.util.*
 
-class TakePictureEvent<T>(sequence: Array<T>, private val state: CameraState) :
-    TransportButtonSequenceEvent<T>(sequence) {
+class TakePictureEvent<T>(
+    sequence: Array<T>, private val state: CameraState,
+    fileSender: FileSender
+) :
+    TransportButtonSequenceEvent<T>(sequence, fileSender) {
 
     override fun execute() {
         state.takePicture {

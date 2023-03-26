@@ -13,7 +13,7 @@ import kotlinx.coroutines.runBlocking
 import java.io.IOException
 import java.io.InputStream
 
-class FileSender(serverUri: Uri, private val bufSize: Int) {
+class FileSender(serverUri: Uri, private val destination: Int, private val bufSize: Int) {
     private val channel = let {
         val builder = ManagedChannelBuilder.forAddress(serverUri.host, serverUri.port)
         if (serverUri.scheme == "https") {
@@ -34,9 +34,9 @@ class FileSender(serverUri: Uri, private val bufSize: Int) {
                 try {
                     stub.sendChunks(fileToFlow(filename, stream))
                 } catch (e: StatusException) {
-                    Log.e(TAG, "Status exception: ${e}")
+                    Log.e(TAG, "Status exception: $e")
                 } catch (e: IOException) {
-                    Log.e(TAG, "IO exception: ${e}")
+                    Log.e(TAG, "IO exception: $e")
                 }
             }
         }
@@ -52,7 +52,7 @@ class FileSender(serverUri: Uri, private val bufSize: Int) {
             .setRequest(
                 SendFileRequest.newBuilder()
                     .setFileName(filename)
-                    .setDestination(1234)
+                    .setDestination(destination)
             )
             .build()
         emit(file)
