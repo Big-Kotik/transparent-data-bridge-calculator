@@ -8,7 +8,7 @@ import java.io.InputStream
 import java.util.concurrent.Executors
 
 
-class VoiceState() {
+class VoiceState {
     private var byteArrayOutputStream: ByteArrayOutputStream? = null
     private var recorder: MediaRecorder? = null
     private var executor = Executors.newSingleThreadExecutor()
@@ -26,8 +26,8 @@ class VoiceState() {
 
             recorder = MediaRecorder()
             recorder?.setAudioSource(MediaRecorder.AudioSource.MIC)
-            recorder?.setOutputFormat(MediaRecorder.OutputFormat.AMR_NB);
-            recorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+            recorder?.setOutputFormat(MediaRecorder.OutputFormat.AMR_NB)
+            recorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
             recorder?.setOutputFile(parcelWrite.fileDescriptor)
             recorder?.prepare()
 
@@ -59,7 +59,7 @@ class VoiceState() {
                     }
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Whlie reading ${e.message} because of ${e.cause} happened")
+                Log.e(TAG, "While reading ${e.message} because of ${e.cause} happened")
             }
             recorder?.stop()
             recorder?.reset()
@@ -71,13 +71,12 @@ class VoiceState() {
     }
 
     fun stopRecording(onRecordingTaken: (ByteArray) -> Unit) {
-        if (stop == true) {
+        if (stop) {
             return
         }
 
-        Log.e(TAG, "Ending recoder")
+        Log.e(TAG, "Ending recorder")
         stop = true
-
 
         executor.submit{
             stop = false
@@ -90,5 +89,4 @@ class VoiceState() {
     companion object {
         const val TAG = "VoiceState"
     }
-
 }

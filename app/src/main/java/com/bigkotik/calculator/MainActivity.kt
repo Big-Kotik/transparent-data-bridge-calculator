@@ -14,7 +14,7 @@ import com.bigkotik.calculator.camera.CameraState
 import com.bigkotik.calculator.camera.StartCameraEvent
 import com.bigkotik.calculator.camera.StopCameraEvent
 import com.bigkotik.calculator.camera.TakePictureEvent
-import com.bigkotik.calculator.events.queuehandler.*
+import com.bigkotik.calculator.events.queuehandler.QueueEventHandler
 import com.bigkotik.calculator.voice.StartRecordingEvent
 import com.bigkotik.calculator.voice.StopRecordingEvent
 import com.bigkotik.calculator.voice.VoiceState
