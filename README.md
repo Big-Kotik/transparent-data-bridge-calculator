@@ -1,50 +1,93 @@
-![GitHub Cards Preview](https://github.com/JahidHasanCO/Calculator-App/blob/master/ART/cover.png)
+# Calculator masked spy app
 
-# Calculator
+Android app for inconspicuous recording, photo taking, media storage and emergency communication
 
-The calculator is the essential tool for your smartphone, simple and easy to use with a sleek design - the perfect calculator for Android.   
 [![License MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-## Characteristics 
 
-```bash
+## How it works and why it is needed
 
-✔ A clear display format and easy to read. 
-✔ An intuitive and attractive design that facilitates calculations every day.
-✔ You can use the backspace key to correct a simple mistake.
-
+What you can do:
 ```
+✔ record audio 
+✔ take pictures
+✔ contact emergency contact in Telegram
+✔ Wipe your storage if needed
+```
+
+How it works:
+```
+After file is created (photo taken or audio record) it will be encrypted and send through proxy to your local storage
+```
+
+Why it is needed:
+```
+1. during rallies - if police will take your phone, they won\'t be able to delete any of audio you recorded during the rally
+2. to inconspicuous recording during interactions with state representatives
+3. to cantant your lawyer in case of arrest
+4. to remoted storage wiping during police search
+```
+
+
+## Guide
+
+### How to deploy the app:
+```bash
+git clone https://github.com/Big-Kotik/transparentb-data-bridge-relay
+
+sudo docker build -t relay .
+
+sudo docker run -d -p 10000:10000 relay
+```
+please, consult with a test specialist deploy a relay server, to be sure, you are doing everything right
+
+### How to use the app:
+
+#### Install and get started:
+```
+1. download the app
+2. Give the app all permissions it needs
+3. Press "=" to see current state of the app
+4. If something is not set, see the alert and specify the needed option
+5. Repeat steps 3 and 4 until the alert "All set up"
+```
+
+
+#### Options to be set by user:
+```
+ - SERVER_INDEX - unique server id
+ - PREFIX - prefix for every command
+```
+#### Commands to use
+```
+It is essential to write chosen prefix before every command you use, so try to choose short prefix
+Commands:
+ - 1 - start recording
+ - 2 - stop recording (file will be saved to your server)
+ - ( - enable camera 
+ - 0 - take a picture (will be saved to your server)
+ - ) - disable camera
+ - 3 - implement telegram bot for alerts
+
+So, if your prefix is "44", to take a picture you need to write 44(44044)
+Or, if your prefix is "8", to make a recording your need to write 8182
+```
+
 
 ## App Screen
 
-<img src="https://github.com/JahidHasanCO/Calculator-App/blob/master/ART/Calculator.png" width="270" height="585">    <img src="https://github.com/JahidHasanCO/Calculator-App/blob/master/ART/Calculator-Dark.png" width="270" height="585">
+<img src="https://github.com/Big-Kotik/transparent-data-bridge-calculator/blob/master/ART/Calculator.png" width="270" height="585">
 
-```
-MIT License
+## Future plans:
 
-Copyright (c) 2021 Jahid Hasan
+- implement storage wiping
+- implement video recording
+- add better encryption
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
 
 ### Contributing 💡
 If you want to contribute to this project and make it better with new ideas, your pull request is very welcomed.
 If you find any issue just put it in the repository issue section, thank you.
 
 
+##### Thanks to ![JahidHasanCO](https://github.com/JahidHasanCO) for cover calculator app

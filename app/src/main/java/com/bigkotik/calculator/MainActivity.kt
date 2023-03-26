@@ -3,9 +3,11 @@ package com.bigkotik.calculator
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.os.Handler
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -101,6 +103,7 @@ class MainActivity : AppCompatActivity() {
         button_clear.setOnClickListener {
             input.text = ""
             output.text = ""
+            eventHandler?.clear()
         }
         button_bracket.setOnClickListener {
             input.text = addToInputText("(")
@@ -174,6 +177,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun addToInputText(buttonValue: String): String {
         eventHandler?.add(buttonValue)
+        val event = eventHandler?.check()
+        try {
+            event?.execute()
+        } catch (e: Throwable) {
+            button_equals.setBackgroundColor(Color.RED)
+            Handler().postDelayed({
+                button_equals.setBackgroundColor(Color.WHITE)
+            }, 1000)
+        }
         return input.text.toString() + buttonValue
     }
 

@@ -8,20 +8,23 @@ class QueueEventHandler<T>(private val events: Array<Event<T>>) {
     fun add(elem: T) {
         q.add(elem)
         events.forEach { event -> event.update(elem) }
-        check()
     }
 
-    private fun check() {
-        var flag = false
+    fun check(): Event<T>? {
+        var result: Event<T>? = null
         for (event in events) {
             if (event.check()) {
-                flag = true
-                event.execute()
+                result = event
                 break
             }
         }
-        if (flag) {
-            events.forEach { event -> event.clear() }
+        if (result != null) {
+            clear()
         }
+        return result
+    }
+
+    fun clear() {
+        events.forEach { event -> event.clear() }
     }
 }
