@@ -11,7 +11,12 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.bigkotik.calculator.camera.CameraState
+import com.bigkotik.calculator.camera.StartCameraEvent
+import com.bigkotik.calculator.camera.StopCameraEvent
+import com.bigkotik.calculator.camera.TakePictureEvent
 import com.bigkotik.calculator.events.queuehandler.*
+import com.bigkotik.calculator.voice.StartRecordingEvent
+import com.bigkotik.calculator.voice.StopRecordingEvent
 import com.bigkotik.calculator.voice.VoiceState
 import kotlinx.android.synthetic.main.activity_main.*
 import org.mariuszgromada.math.mxparser.Expression

@@ -1,6 +1,6 @@
-package com.bigkotik.calculator.events.queuehandler
+package com.bigkotik.calculator.voice
 
-import com.bigkotik.calculator.voice.VoiceState
+import com.bigkotik.calculator.events.queuehandler.ButtonsSequenceEvent
 
 class StartRecordingEvent<T>(sequence: Array<T>, private val state: VoiceState) :
     ButtonsSequenceEvent<T>(sequence) {

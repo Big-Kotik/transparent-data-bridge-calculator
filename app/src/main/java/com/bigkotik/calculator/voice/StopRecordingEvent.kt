@@ -1,14 +1,11 @@
-package com.bigkotik.calculator.events.queuehandler
+package com.bigkotik.calculator.voice
 
-import android.net.Uri
 import android.util.Log
-import com.bigkotik.calculator.transport.FileSender
-import com.bigkotik.calculator.voice.VoiceState
+import com.bigkotik.calculator.events.queuehandler.TransportButtonSequenceEvent
 import java.util.*
 
 class StopRecordingEvent<T>(sequence: Array<T>, private val state: VoiceState) :
-    ButtonsSequenceEvent<T>(sequence) {
-    private val fileSender = FileSender(Uri.parse("http://192.168.1.127:10000"), 1024)
+    TransportButtonSequenceEvent<T>(sequence) {
 
     override fun execute() {
         state.stopRecording {
