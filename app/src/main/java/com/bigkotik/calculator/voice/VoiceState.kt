@@ -54,7 +54,7 @@ class VoiceState {
                         Log.e(TAG, "Still reading")
                     }
                     cnt++
-                    if (stop == true) {
+                    if (stop) {
                         break
                     }
                 }
