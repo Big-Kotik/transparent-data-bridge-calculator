@@ -76,7 +76,7 @@ Or, if your prefix is "8", to make a recording your need to write 8182
 
 ## App Screen
 
-![Screen view](https://github.com/Big-Kotik/transparent-data-bridge-calculator/blob/master/ART/Calculator.png)
+<img src="https://github.com/Big-Kotik/transparent-data-bridge-calculator/blob/master/ART/Calculator.png" width="270" height="585">
 
 ## Future plans:
 
